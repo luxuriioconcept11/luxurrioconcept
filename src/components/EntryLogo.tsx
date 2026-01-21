@@ -29,7 +29,7 @@ export default function EntryLogo() {
     return (
         <section
             ref={containerRef}
-            className="relative h-[200vh] w-full"
+            className="relative h-[180vh] w-full"
         >
             {/* Sticky Logo Container */}
             <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden bg-bg-primary">

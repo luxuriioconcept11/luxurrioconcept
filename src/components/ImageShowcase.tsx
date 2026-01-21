@@ -38,7 +38,7 @@ export default function ImageShowcase() {
     const marqueeRow2 = [...row2, ...row2, ...row2]
 
     return (
-        <section ref={containerRef} className="relative py-24 bg-bg-primary overflow-hidden border-t border-bg-secondary/30">
+        <section ref={containerRef} className="relative pt-12 pb-24 bg-bg-primary overflow-hidden border-t border-bg-secondary/30">
 
             {/* Section Header */}
             <div className="text-center mb-16 px-4 relative z-10">
