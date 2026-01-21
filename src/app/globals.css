@@ -1,0 +1,199 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg-primary: #10130E;
+  --bg-secondary: #243027;
+  --bg-card: #373F3C;
+  --gold-primary: #E5DB96;
+  --gold-hover: #BDA85B;
+  --gold-muted: #7B7145;
+  --text-light: #F5F5F0;
+  --text-muted: #B7B7A4;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-light);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  width: 100%;
+  max-width: 100vw;
+  min-height: 100vh;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gold-muted);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-primary);
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Image Hover Glow Effect */
+.image-glow {
+  position: relative;
+}
+
+.image-glow::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, var(--gold-primary), var(--gold-hover), var(--gold-muted));
+  border-radius: inherit;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+}
+
+.image-glow:hover::before {
+  opacity: 1;
+}
+
+/* Reels Carousel */
+.reels-container {
+  perspective: 1000px;
+}
+
+.reel-card {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.reel-card.active {
+  transform: scale(1.1) translateZ(50px);
+  z-index: 10;
+}
+
+.reel-card.prev,
+.reel-card.next {
+  transform: rotateY(15deg) scale(0.85);
+  opacity: 0.6;
+}
+
+.reel-card.prev {
+  transform: rotateY(15deg) scale(0.85) translateX(-20%);
+}
+
+.reel-card.next {
+  transform: rotateY(-15deg) scale(0.85) translateX(20%);
+}
+
+/* Modal Backdrop */
+.modal-backdrop {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Gold Gradient Text */
+.gold-gradient-text {
+  background: linear-gradient(135deg, var(--gold-primary), var(--gold-hover));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  /* Glow - using filter drop-shadow since background-clip:text clips text-shadow */
+  filter: drop-shadow(0 0 15px rgba(229, 219, 150, 0.6));
+}
+
+/* Global Gold Glow Utility */
+.text-glow-gold {
+  text-shadow: 0 0 20px rgba(229, 219, 150, 0.5), 0 0 10px rgba(189, 168, 91, 0.3);
+}
+
+/* Premium Glassmorphism */
+.glass-card {
+  background: rgba(30, 30, 30, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(229, 219, 150, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Neon Gold Glow */
+.text-glow-neon {
+  text-shadow:
+    0 0 5px rgba(229, 219, 150, 0.5),
+    0 0 10px rgba(229, 219, 150, 0.3),
+    0 0 20px rgba(189, 168, 91, 0.2),
+    0 0 30px rgba(189, 168, 91, 0.1);
+}
+
+/* Line Clamp */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Marquee Animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-reverse {
+  0% {
+    transform: translateX(-50%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 80s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee-reverse 80s linear infinite;
+}
+
+.hover-pause:hover {
+  animation-play-state: paused;
+}
