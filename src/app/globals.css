@@ -333,11 +333,3 @@ img {
     transform: translateZ(0);
   }
 }
-
-/* Content Visibility Optimization - Huge memory saver for Safari */
-/* Allows browser to skip rendering off-screen sections */
-main>section:not(:first-child) {
-  content-visibility: auto;
-  contain-intrinsic-size: 800px;
-  /* Approximate height of sections */
-}

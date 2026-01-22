@@ -8,8 +8,8 @@ export default function FounderSection() {
         <section className="relative py-24 md:py-40 px-4 sm:px-6 lg:px-8 bg-bg-primary overflow-hidden">
             {/* Background Elements */}
             <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gold-primary/3 rounded-full blur-[200px]" />
-                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gold-muted/5 rounded-full blur-[150px]" />
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gold-primary/3 rounded-full blur-[60px] md:blur-[200px]" />
+                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gold-muted/5 rounded-full blur-[50px] md:blur-[150px]" />
             </div>
 
             <div className="relative max-w-6xl mx-auto">
