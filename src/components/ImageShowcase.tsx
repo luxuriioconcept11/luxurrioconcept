@@ -48,13 +48,22 @@ export default function ImageShowcase() {
         return () => observer.disconnect()
     }, [])
 
-    // Split images for two rows (6 each for better mobile performance)
-    const row1 = showcaseImages.slice(0, 6)
-    const row2 = showcaseImages.slice(6, 12)
+    // Optimized Marquee: Reduce items on mobile to prevent layer explosions
+    const [isMobile, setIsMobile] = useState(false)
+
+    useEffect(() => {
+        setIsMobile(window.innerWidth < 768)
+    }, [])
+
+    // Mobile: Show fewer images per row to save memory
+    // PC: Show full gallery
+    const itemsPerRow = isMobile ? 4 : 6
+    const row1 = showcaseImages.slice(0, itemsPerRow)
+    const row2 = showcaseImages.slice(6, 6 + itemsPerRow)
 
     // Duplicating for infinite loop effect
-    const marqueeRow1 = [...row1, ...row1, ...row1]
-    const marqueeRow2 = [...row2, ...row2, ...row2]
+    const marqueeRow1 = [...row1, ...row1, ...(isMobile ? [...row1, ...row1] : [...row1])]
+    const marqueeRow2 = [...row2, ...row2, ...(isMobile ? [...row2, ...row2] : [...row2])]
 
     return (
         <section ref={containerRef} className="relative pt-12 pb-24 bg-bg-primary overflow-hidden border-t border-bg-secondary/30">
