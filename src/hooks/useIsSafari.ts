@@ -10,6 +10,9 @@ export function useIsSafari() {
         const isSafariBrowser = ua.indexOf('safari') > -1 && ua.indexOf('chrome') === -1
         const isMobile = /iphone|ipad|ipod/.test(ua) || (ua.includes('macintosh') && 'ontouchend' in document)
 
+        // Debug logging
+        console.log('Safari Detection:', { ua, isSafariBrowser, isMobile, result: isSafariBrowser && isMobile })
+
         setIsSafari(isSafariBrowser)
         setIsSafariMobile(isSafariBrowser && isMobile)
 
