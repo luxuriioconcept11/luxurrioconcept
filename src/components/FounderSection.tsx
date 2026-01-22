@@ -37,6 +37,9 @@ export default function FounderSection() {
                                     alt="Yash Bhagwani - Founder of Luxuriio Concept"
                                     fill
                                     className="object-cover object-top transition-transform duration-700 group-hover:scale-110"
+                                    sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, 380px"
+                                    loading="lazy"
+                                    quality={70}
                                 />
                                 <div className="absolute inset-0 bg-gold-primary/10 group-hover:bg-transparent transition-colors duration-500" />
                             </div>

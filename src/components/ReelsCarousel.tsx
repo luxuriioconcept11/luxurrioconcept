@@ -1,59 +1,141 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import { gsap } from 'gsap'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 
+// Only use the 5 available videos with alternating intro/outro pattern
 const baseItems = [
-    { id: 1, title: 'Living Room', src: '/reels/reel-1.mp4', poster: '/gallery/image-1.jpg' },
-    { id: 2, title: 'Bedroom', src: '/reels/reel-2.mp4', poster: '/gallery/image-2.jpg' },
-    { id: 3, title: 'Kitchen', src: '/reels/reel-3.mp4', poster: '/gallery/image-3.jpg' },
-    { id: 4, title: 'Bathroom', src: '/reels/reel-4.mp4', poster: '/gallery/image-4.jpg' },
-    { id: 5, title: 'Office', src: '/reels/reel-5.mp4', poster: '/gallery/image-5.jpg' },
-    { id: 6, title: 'Dining', src: '/reels/reel-6.mp4', poster: '/gallery/image-6.jpg' },
-    { id: 7, title: 'Lounge', src: '/reels/reel-7.mp4', poster: '/gallery/image-7.jpg' },
-    { id: 8, title: 'Hallway', src: '/reels/reel-8.mp4', poster: '/gallery/image-8.jpg' },
-    { id: 9, title: 'Suite', src: '/reels/reel-9.mp4', poster: '/gallery/image-9.jpg' },
-    { id: 10, title: 'Terrace', src: '/reels/reel-10.mp4', poster: '/gallery/image-10.jpg' },
-    { id: 11, title: 'Study', src: '/reels/reel-11.mp4', poster: '/gallery/image-11.jpg' },
+    { id: 1, title: 'Living Room', src: '/reels/reel-1.mp4', poster: '/gallery/image-2.jpg', clipType: 'intro' },
+    { id: 2, title: 'Bedroom', src: '/reels/reel-2.mp4', poster: '/gallery/image-3.jpg', clipType: 'outro' },
+    { id: 3, title: 'Kitchen', src: '/reels/reel-3.mp4', poster: '/gallery/image-4.jpg', clipType: 'intro' },
+    { id: 4, title: 'Hallway', src: '/reels/reel-8.mp4', poster: '/gallery/image-5.jpg', clipType: 'outro' },
+    { id: 5, title: 'Study', src: '/reels/reel-11.mp4', poster: '/gallery/image-6.jpg', clipType: 'intro' },
 ]
 
-// Pure component that ONLY renders video if active
-const ReelPlayer = ({ src, poster, title, isActive, isDragging }: { src: string, poster?: string, title: string, isActive: boolean, isDragging: boolean }) => {
+// Lazy-loaded video player with 3-second clip handling
+// ORIGINAL LOGIC: Only CENTER card plays video, others show poster preview
+const ReelPlayer = ({
+    src,
+    poster,
+    title,
+    isActive,
+    isDragging,
+    clipType = 'intro'
+}: {
+    src: string
+    poster?: string
+    title: string
+    isActive: boolean
+    isDragging: boolean
+    clipType?: 'intro' | 'outro'
+}) => {
+    const videoRef = useRef<HTMLVideoElement>(null)
+    const containerRef = useRef<HTMLDivElement>(null)
+    const [isVisible, setIsVisible] = useState(false)
 
-    // Logic: Only mount video if active. 
-    // If not active -> Image
-    // If dragging -> Image (or paused video, but image is smoother for performance)
+    // Intersection Observer for lazy loading
+    useEffect(() => {
+        const container = containerRef.current
+        if (!container) return
 
-    // User requested: "ONLY the CENTER card should play video"
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        setIsVisible(true)
+                        observer.disconnect()
+                    }
+                })
+            },
+            {
+                rootMargin: '100px',
+                threshold: 0.1
+            }
+        )
 
-    const shouldPlay = isActive && !isDragging
+        observer.observe(container)
+        return () => observer.disconnect()
+    }, [])
+
+    // 3-second clip handling: intro plays first 3 sec, outro plays last 3 sec
+    useEffect(() => {
+        const video = videoRef.current
+        if (!video || !isActive || isDragging) return
+
+        const CLIP_DURATION = 3 // seconds
+
+        const handleTimeUpdate = () => {
+            if (clipType === 'intro') {
+                // Play only first 3 seconds, then loop
+                if (video.currentTime >= CLIP_DURATION) {
+                    video.currentTime = 0
+                }
+            } else {
+                // For outro, play last 3 seconds
+                if (video.duration && video.currentTime < video.duration - CLIP_DURATION) {
+                    video.currentTime = video.duration - CLIP_DURATION
+                }
+            }
+        }
+
+        const handleLoadedMetadata = () => {
+            if (clipType === 'outro' && video.duration) {
+                video.currentTime = video.duration - CLIP_DURATION
+            }
+        }
+
+        video.addEventListener('timeupdate', handleTimeUpdate)
+        video.addEventListener('loadedmetadata', handleLoadedMetadata)
+
+        return () => {
+            video.removeEventListener('timeupdate', handleTimeUpdate)
+            video.removeEventListener('loadedmetadata', handleLoadedMetadata)
+        }
+    }, [isActive, isDragging, clipType])
+
+    // Play/pause based on active state
+    useEffect(() => {
+        const video = videoRef.current
+        if (!video) return
+
+        if (isActive && !isDragging && isVisible) {
+            video.play().catch(() => { })
+        } else {
+            video.pause()
+        }
+    }, [isActive, isDragging, isVisible])
+
+    // ORIGINAL LOGIC: Only load video if this is the ACTIVE (center) card AND not dragging
+    const shouldPlayVideo = isActive && !isDragging && isVisible
 
     return (
-        <div className="relative w-full h-full bg-black">
-            {shouldPlay ? (
+        <div ref={containerRef} className="relative w-full h-full bg-black">
+            {shouldPlayVideo ? (
                 <video
+                    ref={videoRef}
                     src={src}
-                    // Fallback poster while loading
                     poster={poster}
                     muted
                     playsInline
                     autoPlay
                     loop
+                    preload="metadata"
                     className="absolute inset-0 w-full h-full object-cover"
                 />
             ) : (
-                <div className="absolute inset-0 w-full h-full relative">
-                    {/* Next/Image for optimization on static cards */}
+                // ALWAYS show poster preview for non-active reels
+                <div className="absolute inset-0 w-full h-full">
                     {poster && (
                         <Image
                             src={poster}
                             alt={title}
                             fill
                             className="object-cover"
-                            sizes="(max-width: 768px) 300px, 400px"
-                            unoptimized
+                            sizes="(max-width: 768px) 260px, 380px"
+                            loading="lazy"
+                            quality={75}
                         />
                     )}
                     {/* Dark overlay for inactive cards to help focus on center */}
@@ -63,7 +145,6 @@ const ReelPlayer = ({ src, poster, title, isActive, isDragging }: { src: string,
                 </div>
             )}
 
-            {/* Dark Gradient Overlay (Always present for text readability if we had text, or just style) */}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60 z-10 pointer-events-none" />
         </div>
     )
@@ -82,8 +163,9 @@ export default function ReelsCarousel() {
         const updateLayout = () => {
             const isMobile = window.innerWidth < 768
             if (isMobile) {
-                setConfig({ width: 280, height: 420 })
-                setItems(baseItems.slice(0, 6))
+                setConfig({ width: 260, height: 380 })
+                // Only 4 items on mobile for better performance
+                setItems(baseItems.slice(0, 4))
             } else {
                 setConfig({ width: 380, height: 600 })
                 setItems(baseItems)
@@ -278,6 +360,7 @@ export default function ReelsCarousel() {
                                 title={item.title}
                                 isActive={i === activeIndex}
                                 isDragging={isDragging}
+                                clipType={item.clipType as 'intro' | 'outro'}
                             />
                         </div>
                     ))}
