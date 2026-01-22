@@ -164,8 +164,12 @@ export default function ReelsCarousel() {
             const isMobile = window.innerWidth < 768
             if (isMobile) {
                 setConfig({ width: 260, height: 380 })
-                // Only 3 items on mobile for better performance - prevents Safari memory crash
-                setItems(baseItems.slice(0, 3))
+                // Only 3 items on mobile + Use compressed videos
+                const mobileItems = baseItems.slice(0, 3).map(item => ({
+                    ...item,
+                    src: item.src.replace('/reels/', '/reels-mobile/')
+                }))
+                setItems(mobileItems)
             } else {
                 setConfig({ width: 380, height: 600 })
                 setItems(baseItems)
