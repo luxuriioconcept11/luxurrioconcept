@@ -354,3 +354,20 @@ body.is-safari main>section {
   /* Ensure hardware layer for main sections on Safari to prevent repaints */
   transform: translateZ(0);
 }
+
+/* ========================================= */
+/* VISIBILITY ENFORCER - "THE HAMMER"        */
+/* ========================================= */
+/* Once app is stabilized (3s after load), FORCE content to stay visible. */
+/* This overrides any scroll-linked animation library that might be glitching. */
+
+body.app-stabilized main>section {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Also force the hero content specifically */
+body.app-stabilized .hero-content-layer {
+  opacity: 1 !important;
+  visibility: visible !important;
+}

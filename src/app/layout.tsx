@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
 import './globals.css'
 import SafariDetector from '@/components/SafariDetector'
+import VisibilityEnforcer from '@/components/VisibilityEnforcer'
 
 // Dynamic import - FloatingSocials only appears on scroll, not needed for initial render
 const FloatingSocials = dynamic(() => import('@/components/FloatingSocials'), {
@@ -30,6 +31,7 @@ export default function RootLayout({
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             </head>
             <body className="bg-bg-primary text-text-light antialiased">
+                <VisibilityEnforcer />
                 <SafariDetector />
                 <FloatingSocials />
                 {children}

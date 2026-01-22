@@ -41,7 +41,7 @@ export default function EntryLogo() {
                         // Y transform removed to keep it sticky perfectly
                         y: 0
                     }}
-                    className="relative z-10 flex flex-col items-center px-4"
+                    className="relative z-10 flex flex-col items-center px-4 hero-content-layer"
                 >
                     {/* Logo + Text in Line */}
                     <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
