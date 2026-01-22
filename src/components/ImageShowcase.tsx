@@ -147,21 +147,17 @@ function ShowcaseCard({ image, priority = false, shouldLoad = true }: { image: t
     const [isLoaded, setIsLoaded] = useState(false)
 
     return (
-        <div className="group relative w-[220px] h-[160px] md:w-[360px] md:h-[250px] flex-shrink-0 cursor-pointer transition-all duration-500 hover:z-50 hover:scale-110">
-            {/* Main Card */}
-            <div className="w-full h-full rounded-lg overflow-hidden border border-gold-muted/30 bg-bg-card hover:border-gold-primary/80 transition-all duration-300 shadow-lg hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+        <div className="group relative w-[220px] h-[160px] md:w-[360px] md:h-[250px] flex-shrink-0 cursor-pointer smooth-hover hover:z-50">
+            {/* Main Card - GPU accelerated */}
+            <div className="w-full h-full rounded-lg overflow-hidden border border-gold-muted/30 bg-bg-card hover:border-gold-primary/80 transition-colors duration-300 shadow-lg gpu-accelerated">
                 {/* Image */}
-                <div className="relative w-full h-full bg-bg-secondary">
-                    {/* Loading skeleton - always show until image loads */}
-                    {!isLoaded && (
-                        <div className="absolute inset-0 bg-gradient-to-r from-bg-secondary via-bg-card to-bg-secondary animate-pulse" />
-                    )}
+                <div className="relative w-full h-full skeleton-shimmer">
                     {shouldLoad && (
                         <Image
                             src={image.src}
                             alt={image.title}
                             fill
-                            className={`object-cover transition-all duration-700 group-hover:scale-105 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                            className={`object-cover group-hover:scale-105 transition-transform duration-500 ${isLoaded ? 'opacity-100 animate-fade-in-scale' : 'opacity-0'}`}
                             sizes="(max-width: 768px) 220px, 360px"
                             loading={priority ? "eager" : "lazy"}
                             quality={60}

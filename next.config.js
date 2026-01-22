@@ -10,13 +10,10 @@ const nextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days cache
   },
   output: 'standalone',
-  // Enable experimental optimizations
-  experimental: {
-    optimizeCss: true,
-  },
   // Compress responses
   compress: true,
 }
 
 module.exports = nextConfig
+
 
