@@ -57,13 +57,13 @@ export default function ImageShowcase() {
 
     // Mobile: Show fewer images per row to save memory
     // PC: Show full gallery
-    const itemsPerRow = isMobile ? 4 : 6
+    const itemsPerRow = isMobile ? 3 : 6 // Reduced from 4 to 3 on mobile
     const row1 = showcaseImages.slice(0, itemsPerRow)
     const row2 = showcaseImages.slice(6, 6 + itemsPerRow)
 
-    // Duplicating for infinite loop effect
-    const marqueeRow1 = [...row1, ...row1, ...(isMobile ? [...row1, ...row1] : [...row1])]
-    const marqueeRow2 = [...row2, ...row2, ...(isMobile ? [...row2, ...row2] : [...row2])]
+    // Duplicating for infinite loop effect - REDUCED on mobile (2x instead of 4x)
+    const marqueeRow1 = isMobile ? [...row1, ...row1] : [...row1, ...row1, ...row1]
+    const marqueeRow2 = isMobile ? [...row2, ...row2] : [...row2, ...row2, ...row2]
 
     return (
         <section ref={containerRef} className="relative pt-12 pb-24 bg-bg-primary overflow-hidden border-t border-bg-secondary/30">
