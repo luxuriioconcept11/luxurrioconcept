@@ -2,7 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap');
+/* Self-hosted fonts for faster LCP (no external network requests) */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url('/fonts/inter-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/playfair-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 
 :root {
   --bg-primary: #10130E;
@@ -124,14 +141,13 @@ body {
   -webkit-backdrop-filter: blur(10px);
 }
 
-/* Gold Gradient Text */
+/* Gold Gradient Text - Safari optimized (removed expensive drop-shadow filter) */
 .gold-gradient-text {
   background: linear-gradient(135deg, var(--gold-primary), var(--gold-hover));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  /* Glow - using filter drop-shadow since background-clip:text clips text-shadow */
-  filter: drop-shadow(0 0 15px rgba(229, 219, 150, 0.6));
+  /* Note: filter:drop-shadow removed - very slow on Safari */
 }
 
 /* Global Gold Glow Utility */
@@ -139,11 +155,11 @@ body {
   text-shadow: 0 0 20px rgba(229, 219, 150, 0.5), 0 0 10px rgba(189, 168, 91, 0.3);
 }
 
-/* Premium Glassmorphism */
+/* Premium Glassmorphism - Safari optimized (reduced blur for performance) */
 .glass-card {
-  background: rgba(30, 30, 30, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(30, 30, 30, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(229, 219, 150, 0.15);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
 }
@@ -188,12 +204,14 @@ body {
 
 .animate-marquee {
   animation: marquee 80s linear infinite;
-  will-change: transform;
+  /* will-change removed - causes layer explosion on Safari */
+  transform: translateZ(0);
 }
 
 .animate-marquee-reverse {
   animation: marquee-reverse 80s linear infinite;
-  will-change: transform;
+  /* will-change removed - causes layer explosion on Safari */
+  transform: translateZ(0);
 }
 
 .hover-pause:hover {
@@ -227,15 +245,13 @@ body {
   }
 }
 
-/* Apply to lazy loaded images */
+/* Apply to lazy loaded images - Safari optimized */
 .animate-fade-in {
   animation: smoothFadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-  will-change: opacity, transform;
 }
 
 .animate-fade-in-scale {
   animation: smoothFadeInScale 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-  will-change: opacity, transform;
 }
 
 /* Smooth skeleton shimmer - GPU accelerated */
@@ -264,7 +280,7 @@ body {
       rgba(255, 255, 255, 0.05),
       transparent);
   animation: shimmer 1.5s ease-in-out infinite;
-  will-change: transform;
+  transform: translateZ(0);
 }
 
 /* Hardware acceleration for all transitions */
@@ -284,12 +300,31 @@ img {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Reduce paint on hover transitions */
+/* Reduce paint on hover transitions - Safari optimized */
 .smooth-hover {
   transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  will-change: transform;
 }
 
 .smooth-hover:hover {
   transform: scale(1.05) translateZ(0);
+}
+
+/* Safari-specific optimizations */
+@supports (-webkit-touch-callout: none) {
+
+  /* Reduce animation complexity on Safari/iOS */
+  .animate-marquee,
+  .animate-marquee-reverse {
+    animation-duration: 100s;
+    /* Slower = less GPU work */
+  }
+
+  .skeleton-shimmer::after {
+    animation-duration: 2s;
+  }
+
+  /* Disable backdrop-filter on older Safari versions for performance */
+  .glass-card {
+    background: rgba(30, 30, 30, 0.75);
+  }
 }

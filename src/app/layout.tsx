@@ -1,6 +1,11 @@
 import type { Metadata } from 'next'
+import dynamic from 'next/dynamic'
 import './globals.css'
-import FloatingSocials from '@/components/FloatingSocials'
+
+// Dynamic import - FloatingSocials only appears on scroll, not needed for initial render
+const FloatingSocials = dynamic(() => import('@/components/FloatingSocials'), {
+    ssr: false
+})
 
 export const metadata: Metadata = {
     title: 'Luxuriio Concept | A Complete Interior Designing Solution',

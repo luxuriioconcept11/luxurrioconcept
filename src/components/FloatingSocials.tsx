@@ -223,7 +223,7 @@ export default function FloatingSocials() {
                                     }}
                                     className={clsx(
                                         "absolute flex items-center justify-center rounded-full",
-                                        "bg-bg-card/90 backdrop-blur-md border border-gold-primary/30 text-gold-primary shadow-xl",
+                                        "bg-bg-card/95 backdrop-blur-sm border border-gold-primary/30 text-gold-primary shadow-xl",
                                         "pointer-events-auto cursor-pointer",
                                         "hover:bg-gold-primary hover:text-bg-primary transition-colors duration-300"
                                     )}

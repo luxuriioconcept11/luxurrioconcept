@@ -138,9 +138,9 @@ const ReelPlayer = ({
                             quality={75}
                         />
                     )}
-                    {/* Dark overlay for inactive cards to help focus on center */}
+                    {/* Dark overlay for inactive cards - Safari optimized (no backdrop-blur) */}
                     {!isActive && (
-                        <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] transition-all duration-500" />
+                        <div className="absolute inset-0 bg-black/50 transition-opacity duration-500" />
                     )}
                 </div>
             )}

@@ -38,7 +38,7 @@ export default function EntryLogo() {
                         scale,
                         opacity,
                         y,
-                        willChange: animationComplete ? 'auto' : 'transform, opacity'
+                        willChange: animationComplete ? 'auto' : 'transform'
                     }}
                     className="relative z-10 flex flex-col items-center px-4"
                 >
@@ -55,7 +55,7 @@ export default function EntryLogo() {
                                     hidden: { opacity: 0 },
                                     visible: {
                                         opacity: 1,
-                                        transition: { staggerChildren: 0.1, delayChildren: 0.3 }
+                                        transition: { staggerChildren: 0.04, delayChildren: 0.05 }
                                     }
                                 }}
                             >
@@ -108,12 +108,12 @@ export default function EntryLogo() {
                                 </span>
                             </motion.h1>
 
-                            {/* Tagline */}
+                            {/* Tagline - LCP optimized (reduced delay) */}
                             <motion.p
                                 className="text-gold-muted text-xs sm:text-base md:text-lg lg:text-xl uppercase mt-4 md:mt-6 max-w-[280px] sm:max-w-none mx-auto leading-relaxed"
-                                initial={{ opacity: 0, y: 20, letterSpacing: "0.1em" }}
+                                initial={{ opacity: 0, y: 10, letterSpacing: "0.15em" }}
                                 animate={{ opacity: 1, y: 0, letterSpacing: "0.2em" }}
-                                transition={{ duration: 1.5, delay: 1.5, ease: "easeOut" }}
+                                transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
                             >
                                 A Complete Interior Designing Solution
                             </motion.p>
@@ -125,7 +125,7 @@ export default function EntryLogo() {
                         className="mt-8 md:mt-12 h-px w-32 md:w-48 bg-gradient-to-r from-transparent via-gold-primary to-transparent"
                         initial={{ scaleX: 0 }}
                         animate={{ scaleX: 1 }}
-                        transition={{ duration: 1.5, delay: 0.5 }}
+                        transition={{ duration: 0.8, delay: 0.3 }}
                     />
 
                     {/* Social Icons Row */}
@@ -137,7 +137,7 @@ export default function EntryLogo() {
                             hidden: { opacity: 0 },
                             visible: {
                                 opacity: 1,
-                                transition: { staggerChildren: 0.1, delayChildren: 1.8 }
+                                transition: { staggerChildren: 0.08, delayChildren: 0.6 }
                             }
                         }}
                     >
