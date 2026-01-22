@@ -123,6 +123,10 @@ const ReelPlayer = ({
                     loop
                     preload="metadata"
                     className="absolute inset-0 w-full h-full object-cover"
+                    // @ts-ignore - webkit-playsinline is not in React types but needed for iOS
+                    webkit-playsinline="true"
+                    disablePictureInPicture
+                    disableRemotePlayback
                 />
             ) : (
                 // ALWAYS show poster preview for non-active reels
