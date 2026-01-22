@@ -39,19 +39,22 @@
 }
 
 html {
-  scroll-behavior: auto;
-  /* Removed smooth to prevent fights with scroll logic */
+  scroll-behavior: smooth;
+  width: 100%;
+  max-width: 100vw;
+  /* overflow-x: hidden; - Removed to fix Chrome mobile blank sections bug */
 }
 
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-light);
-  /* overflow-x: hidden; REMOVED */
+  /* overflow-x: hidden; - Removed to fix Chrome mobile blank/disappearing sections */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  min-height: 100dvh;
-  /* Dynamic viewport height for mobile stability */
+  width: 100%;
+  max-width: 100vw;
+  min-height: 100vh;
 }
 
 /* Custom Scrollbar */
