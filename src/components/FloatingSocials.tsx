@@ -110,12 +110,14 @@ export default function FloatingSocials() {
 
             // Check footer intersection
             const footerElement = document.getElementById('footer-link-Phone')
+            let isNearFooter = false
 
             if (footerElement) {
                 const footerRect = footerElement.getBoundingClientRect()
                 const triggerZone = windowSize.height - 200
 
                 if (footerRect.top < triggerZone) {
+                    isNearFooter = true
                     // Near footer - start merge
                     if (phase !== 2 && phase !== 3) {
                         const newTargets: { [key: string]: { x: number, y: number } } = {}
@@ -136,12 +138,18 @@ export default function FloatingSocials() {
                             setPhase(3)
                         }, 1500)
                     }
-                    return
                 }
             }
 
-            // Normal scroll logic
-            if (scrollY > showThreshold) {
+            // If scrolled away from footer, reset phase 2 to allow normal scroll logic
+            if (!isNearFooter && phase === 2) {
+                setPhase(1)
+            }
+
+            // Normal scroll logic - increased threshold to avoid hero overlap
+            const heroHeight = window.innerHeight * 0.8 // Hide icons during hero view
+
+            if (scrollY > heroHeight) {
                 if (phase === 0) {
                     setPhase(1)
                     hasAnimatedRef.current = true
@@ -150,6 +158,7 @@ export default function FloatingSocials() {
                     setPhase(1)
                 }
             } else {
+                // Scrolled back to hero - hide floating icons
                 if (phase !== 0) {
                     setPhase(0)
                     hasAnimatedRef.current = false
