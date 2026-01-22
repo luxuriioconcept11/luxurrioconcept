@@ -295,11 +295,6 @@ img {
   transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Optimized scrolling */
-* {
-  -webkit-overflow-scrolling: touch;
-}
-
 /* Reduce paint on hover transitions - Safari optimized */
 .smooth-hover {
   transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -311,6 +306,18 @@ img {
 
 /* Safari-specific optimizations */
 @supports (-webkit-touch-callout: none) {
+
+  /* CRITICAL: Fix sticky positioning on Safari mobile */
+  html {
+    scroll-behavior: auto !important;
+    /* Disable smooth scroll - breaks Framer Motion on Safari */
+  }
+
+  /* Force GPU compositing for sticky containers */
+  .sticky {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
 
   /* Reduce animation complexity on Safari/iOS */
   .animate-marquee,

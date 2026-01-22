@@ -22,6 +22,10 @@ export default function EntryLogo() {
             if (latest > 0.5 && !animationComplete) {
                 setAnimationComplete(true)
             }
+            // CRITICAL FIX: Reset when scrolling back to top
+            if (latest < 0.3 && animationComplete) {
+                setAnimationComplete(false)
+            }
         })
         return () => unsubscribe()
     }, [scrollYProgress, animationComplete])
