@@ -1,9 +1,11 @@
 'use client'
 
-import { useRef, useState, useEffect, useCallback } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { gsap } from 'gsap'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
+import { useIsSafari } from '@/hooks/useIsSafari'
+import SafariMobileReels from './SafariMobileReels'
 
 // Only use the 5 available videos with alternating intro/outro pattern
 const baseItems = [
@@ -14,8 +16,7 @@ const baseItems = [
     { id: 5, title: 'Study', src: '/reels/reel-11.mp4', poster: '/gallery/image-6.jpg', clipType: 'intro' },
 ]
 
-// Lazy-loaded video player with 3-second clip handling
-// ORIGINAL LOGIC: Only CENTER card plays video, others show poster preview
+// Lazy-loaded video player
 const ReelPlayer = ({
     src,
     poster,
@@ -59,47 +60,38 @@ const ReelPlayer = ({
         return () => observer.disconnect()
     }, [])
 
-    // 3-second clip handling: intro plays first 3 sec, outro plays last 3 sec
+    // 3-second clip handling
     useEffect(() => {
         const video = videoRef.current
         if (!video || !isActive || isDragging) return
 
         const CLIP_DURATION = 3 // seconds
-
         const handleTimeUpdate = () => {
             if (clipType === 'intro') {
-                // Play only first 3 seconds, then loop
-                if (video.currentTime >= CLIP_DURATION) {
-                    video.currentTime = 0
-                }
+                if (video.currentTime >= CLIP_DURATION) video.currentTime = 0
             } else {
-                // For outro, play last 3 seconds
                 if (video.duration && video.currentTime < video.duration - CLIP_DURATION) {
                     video.currentTime = video.duration - CLIP_DURATION
                 }
             }
         }
-
         const handleLoadedMetadata = () => {
             if (clipType === 'outro' && video.duration) {
                 video.currentTime = video.duration - CLIP_DURATION
             }
         }
-
         video.addEventListener('timeupdate', handleTimeUpdate)
         video.addEventListener('loadedmetadata', handleLoadedMetadata)
-
         return () => {
             video.removeEventListener('timeupdate', handleTimeUpdate)
             video.removeEventListener('loadedmetadata', handleLoadedMetadata)
         }
     }, [isActive, isDragging, clipType])
 
-    // Play/pause based on active state
+    // Play/pause logic
     useEffect(() => {
         const video = videoRef.current
         if (!video) return
-
         if (isActive && !isDragging && isVisible) {
             video.play().catch(() => { })
         } else {
@@ -107,7 +99,6 @@ const ReelPlayer = ({
         }
     }, [isActive, isDragging, isVisible])
 
-    // ORIGINAL LOGIC: Only load video if this is the ACTIVE (center) card AND not dragging
     const shouldPlayVideo = isActive && !isDragging && isVisible
 
     return (
@@ -123,13 +114,12 @@ const ReelPlayer = ({
                     loop
                     preload="metadata"
                     className="absolute inset-0 w-full h-full object-cover"
-                    // @ts-ignore - webkit-playsinline is not in React types but needed for iOS
+                    // @ts-ignore - webkit-playsinline needed for iOS
                     webkit-playsinline="true"
                     disablePictureInPicture
                     disableRemotePlayback
                 />
             ) : (
-                // ALWAYS show poster preview for non-active reels
                 <div className="absolute inset-0 w-full h-full">
                     {poster && (
                         <Image
@@ -142,19 +132,18 @@ const ReelPlayer = ({
                             quality={75}
                         />
                     )}
-                    {/* Dark overlay for inactive cards - Safari optimized (no backdrop-blur) */}
                     {!isActive && (
                         <div className="absolute inset-0 bg-black/50 transition-opacity duration-500" />
                     )}
                 </div>
             )}
-
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60 z-10 pointer-events-none" />
         </div>
     )
 }
 
 export default function ReelsCarousel() {
+    const isSafari = useIsSafari()
     const stageRef = useRef<HTMLDivElement>(null)
     const ringRef = useRef<HTMLDivElement>(null)
 
@@ -162,6 +151,17 @@ export default function ReelsCarousel() {
     const [isDragging, setIsDragging] = useState(false)
     const [config, setConfig] = useState({ width: 380, height: 600 })
     const [items, setItems] = useState(baseItems)
+
+    const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false
+
+    // SAFARI MOBILE SURVIVAL MODE: Override strict 3D ring with 2D swiper
+    if (isSafari && isMobile) {
+        const mobileItems = baseItems.map(item => ({
+            ...item,
+            src: item.src.replace('/reels/', '/reels-mobile/')
+        }))
+        return <SafariMobileReels items={mobileItems} />
+    }
 
     useEffect(() => {
         const updateLayout = () => {
@@ -210,28 +210,21 @@ export default function ReelsCarousel() {
             })
         })
 
-        // Auto Rotation 
-        // Note: User wants "Center card plays". Auto-rotation makes "Center" a transient state.
-        // We will keep auto-rotation slow, but we need to track index continuously.
-
+        // Auto Rotation
         const rotationTimeline = gsap.timeline({ repeat: -1, paused: false })
         rotationTimeline.to(ring, {
             rotationY: '-=360',
-            duration: 80, // Much slower auto-spin
+            duration: 80,
             ease: 'none',
         })
 
-        // Ticker to update active index
+        // Active Index Update with Ticker
         const updateActiveIndex = () => {
             const currentRotation = gsap.getProperty(ring, "rotationY") as number
             const step = 360 / count
-
-            // Logic: Normalized rotation to find which item is at 0 degrees (front)
-            // i * step + rotation = 0  =>  i = -rotation / step
             let rawIndex = (-currentRotation / step)
             let normalizedIndex = Math.round(rawIndex) % count
             if (normalizedIndex < 0) normalizedIndex += count
-
             setActiveIndex(normalizedIndex)
         }
         gsap.ticker.add(updateActiveIndex)
@@ -239,17 +232,14 @@ export default function ReelsCarousel() {
         // Interactions
         let startX = 0
         let currentRotation = 0
-        let dragVelocity = 0
         let lastX = 0
 
         const onMouseDown = (e: MouseEvent | TouchEvent) => {
             setIsDragging(true)
             rotationTimeline.pause()
-
             startX = 'touches' in e ? e.touches[0].clientX : e.clientX
             lastX = startX
             currentRotation = gsap.getProperty(ring, 'rotationY') as number
-
             stageRef.current!.style.cursor = 'grabbing'
         }
 
@@ -259,8 +249,6 @@ export default function ReelsCarousel() {
             const diff = x - startX
             const velocity = x - lastX
             lastX = x
-            dragVelocity = velocity
-
             gsap.set(ring, { rotationY: currentRotation + diff * 0.5 })
         }
 
@@ -269,8 +257,6 @@ export default function ReelsCarousel() {
             setIsDragging(false)
             rotationTimeline.play()
             stageRef.current!.style.cursor = 'grab'
-
-            // Optional: Inertia could be added here, but keeping it simple for now to ensure stability
         }
 
         const stage = stageRef.current
@@ -293,13 +279,7 @@ export default function ReelsCarousel() {
             window.removeEventListener('mouseup', onMouseUp)
             window.removeEventListener('touchend', onMouseUp)
         }
-    }, [items, config, isDragging]) // Re-run if isDragging changes? No, ref is better. 
-    // Actually, passing isDragging to ReelPlayer needs state. 
-    // Effect dependency on isDragging might reset GSAP if not careful.
-    // Better to use ref for logic, but state for render. 
-    // The current effect setup is fine because isDragging state change triggers re-render of component, 
-    // but we don't want to re-initialize GSAP every drag. 
-    // Fix: Move GSAP init to a separate effect that depends only on [items, config].
+    }, [items, config, isDragging]) // GSAP effect
 
     return (
         <section className="relative py-24 bg-bg-primary overflow-hidden">
