@@ -25,9 +25,9 @@
   --bg-primary: #10130E;
   --bg-secondary: #243027;
   --bg-card: #373F3C;
-  --gold-primary: #E5DB96;
-  --gold-hover: #BDA85B;
-  --gold-muted: #7B7145;
+  --gold-primary: #D4AF37;
+  --gold-hover: #B8942E;
+  --gold-muted: #8B7024;
   --text-light: #F5F5F0;
   --text-muted: #B7B7A4;
 }
@@ -141,36 +141,35 @@ body {
   -webkit-backdrop-filter: blur(10px);
 }
 
-/* Gold Gradient Text - Safari optimized (removed expensive drop-shadow filter) */
+/* Gold Gradient Text */
 .gold-gradient-text {
   background: linear-gradient(135deg, var(--gold-primary), var(--gold-hover));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  /* Note: filter:drop-shadow removed - very slow on Safari */
 }
 
 /* Global Gold Glow Utility */
 .text-glow-gold {
-  text-shadow: 0 0 20px rgba(229, 219, 150, 0.5), 0 0 10px rgba(189, 168, 91, 0.3);
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.5), 0 0 10px rgba(184, 148, 46, 0.3);
 }
 
-/* Premium Glassmorphism - Safari optimized (reduced blur for performance) */
+/* Premium Glassmorphism */
 .glass-card {
   background: rgba(30, 30, 30, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(229, 219, 150, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 175, 55, 0.15);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
 }
 
 /* Neon Gold Glow */
 .text-glow-neon {
   text-shadow:
-    0 0 5px rgba(229, 219, 150, 0.5),
-    0 0 10px rgba(229, 219, 150, 0.3),
-    0 0 20px rgba(189, 168, 91, 0.2),
-    0 0 30px rgba(189, 168, 91, 0.1);
+    0 0 5px rgba(212, 175, 55, 0.5),
+    0 0 10px rgba(212, 175, 55, 0.3),
+    0 0 20px rgba(184, 148, 46, 0.2),
+    0 0 30px rgba(184, 148, 46, 0.1);
 }
 
 /* Line Clamp */
@@ -204,13 +203,11 @@ body {
 
 .animate-marquee {
   animation: marquee 80s linear infinite;
-  /* will-change removed - causes layer explosion on Safari */
   transform: translateZ(0);
 }
 
 .animate-marquee-reverse {
   animation: marquee-reverse 80s linear infinite;
-  /* will-change removed - causes layer explosion on Safari */
   transform: translateZ(0);
 }
 
@@ -245,7 +242,7 @@ body {
   }
 }
 
-/* Apply to lazy loaded images - Safari optimized */
+/* Apply to lazy loaded images */
 .animate-fade-in {
   animation: smoothFadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
@@ -300,59 +297,13 @@ img {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Reduce paint on hover transitions - Safari optimized */
+/* Reduce paint on hover transitions */
 .smooth-hover {
   transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .smooth-hover:hover {
   transform: scale(1.05) translateZ(0);
-}
-
-/* Safari-specific optimizations */
-@supports (-webkit-touch-callout: none) {
-
-  /* Reduce animation complexity on Safari/iOS */
-  .animate-marquee,
-  .animate-marquee-reverse {
-    animation-duration: 100s;
-    /* Slower = less GPU work */
-  }
-
-  .skeleton-shimmer::after {
-    animation-duration: 2s;
-  }
-
-  /* Disable backdrop-filter on older Safari versions for performance */
-  .glass-card {
-    background: rgba(30, 30, 30, 0.75);
-  }
-
-  /* Force hardware acceleration for fixed elements to prevent flickering */
-  .fixed {
-    transform: translateZ(0);
-  }
-}
-
-/* Safari-specific memory protections (Active when useIsSafari hooks detects Safari) */
-body.is-safari .glass-card,
-body.is-safari .modal-backdrop {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  background: rgba(30, 30, 30, 0.95) !important;
-  /* Opaque fallback */
-}
-
-body.is-safari .blur-\[60px\],
-body.is-safari .blur-\[50px\],
-body.is-safari .blur-\[200px\] {
-  filter: blur(20px) !important;
-  /* Cap blur radius on Safari to save VRAM */
-}
-
-body.is-safari main>section {
-  /* Ensure hardware layer for main sections on Safari to prevent repaints */
-  transform: translateZ(0);
 }
 
 /* ========================================= */

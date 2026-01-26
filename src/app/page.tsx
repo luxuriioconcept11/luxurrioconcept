@@ -10,11 +10,6 @@ const ImageShowcase = dynamic(() => import('@/components/ImageShowcase'), {
     ssr: true
 })
 
-const ReelsCarousel = dynamic(() => import('@/components/ReelsCarousel'), {
-    loading: () => <div className="h-screen bg-bg-primary" />,
-    ssr: true
-})
-
 const FounderSection = dynamic(() => import('@/components/FounderSection'), {
     loading: () => <div className="h-96 bg-bg-primary" />,
     ssr: true
@@ -52,7 +47,6 @@ function useLazyMount(rootMargin = '500px') {
 }
 
 export default function Home() {
-    const reelsMount = useLazyMount('600px')
     const showcaseMount = useLazyMount('600px')
 
     return (
@@ -63,11 +57,6 @@ export default function Home() {
             {/* Image Showcase Gallery - Lazy mounted for GPU savings */}
             <div ref={showcaseMount.ref}>
                 {showcaseMount.shouldMount ? <ImageShowcase /> : <div className="h-screen bg-bg-primary" />}
-            </div>
-
-            {/* Vertical Reels Carousel - Lazy mounted (heaviest component) */}
-            <div ref={reelsMount.ref}>
-                {reelsMount.shouldMount ? <ReelsCarousel /> : <div className="h-screen bg-bg-primary" />}
             </div>
 
             {/* Founder Message Section */}

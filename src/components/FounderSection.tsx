@@ -57,7 +57,7 @@ export default function FounderSection() {
                             transition={{ duration: 0.8, delay: 0.2 }}
                         >
                             <p className="text-gold-primary font-display text-2xl md:text-3xl text-glow-neon mb-2">
-                                Yash Bhagwani
+                                Yashh Bhagwani
                             </p>
                             <p className="text-text-muted">
                                 <span className="gold-gradient-text font-medium text-lg block mb-1">Founder, Luxuriio Concept</span>
@@ -98,12 +98,14 @@ export default function FounderSection() {
                             {/* Founder Quote */}
                             <blockquote className="mb-8 relative z-10">
                                 <p className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-text-light leading-tight mb-6">
-                                    True luxury is not about excess, but about creating spaces that nurture the
-                                    <span className="gold-gradient-text"> soul</span>.
+                                    Luxury begins with intention, not .
+                                    <span className="gold-gradient-text"> excess</span>.
                                 </p>
                                 <p className="text-text-muted text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0">
-                                    Every design we craft is a reflection of our commitment to excellence.
-                                    We don't just create interiors — we create experiences that transform the way you live.
+                                    We craft interiors that feel balanced, serene, and deeply personal.
+Spaces designed to nurture the soul and enhance everyday living.
+Every project reflects thoughtful design, refined detail, and lasting quality.
+Beyond interiors, we create experiences that quietly elevate the way you live.
                                 </p>
                             </blockquote>
 
