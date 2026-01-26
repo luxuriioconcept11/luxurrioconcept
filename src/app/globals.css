@@ -107,34 +107,6 @@ body {
   opacity: 1;
 }
 
-/* Reels Carousel */
-.reels-container {
-  perspective: 1000px;
-}
-
-.reel-card {
-  transition: transform 0.5s ease, opacity 0.5s ease;
-}
-
-.reel-card.active {
-  transform: scale(1.1) translateZ(50px);
-  z-index: 10;
-}
-
-.reel-card.prev,
-.reel-card.next {
-  transform: rotateY(15deg) scale(0.85);
-  opacity: 0.6;
-}
-
-.reel-card.prev {
-  transform: rotateY(15deg) scale(0.85) translateX(-20%);
-}
-
-.reel-card.next {
-  transform: rotateY(-15deg) scale(0.85) translateX(20%);
-}
-
 /* Modal Backdrop */
 .modal-backdrop {
   backdrop-filter: blur(10px);

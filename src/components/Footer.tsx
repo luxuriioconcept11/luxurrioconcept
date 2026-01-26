@@ -145,8 +145,8 @@ export default function Footer() {
                 </div>
             </div>
 
-            {/* Ambient Glow */}
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gold-primary/3 rounded-full blur-[150px] pointer-events-none" />
+            {/* Ambient Glow - Reduced blur for Safari */}
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gold-primary/3 rounded-full blur-[60px] pointer-events-none" />
         </footer>
     )
 }

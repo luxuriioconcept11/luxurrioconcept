@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { clsx } from 'clsx'
 
@@ -43,240 +43,82 @@ const socials = [
     }
 ]
 
-// Hero icon names in the order they appear in EntryLogo
-const heroIconOrder = ['Phone', 'WhatsApp', 'Email', 'Instagram']
-
 export default function FloatingSocials() {
-    // Phase 0: Hidden (on Hero)
-    // Phase 1: Floating (Scrolled past Hero)
-    // Phase 2: Merging (Near Footer)
-    // Phase 3: Hidden (Merged)
-
-    const [phase, setPhase] = useState<0 | 1 | 2 | 3>(0)
-    const [heroPositions, setHeroPositions] = useState<{ [key: string]: { x: number, y: number } }>({})
-    const [footerPositions, setFooterPositions] = useState<{ [key: string]: { x: number, y: number } }>({})
-    const [windowSize, setWindowSize] = useState({ width: 1200, height: 800 })
-    const hasAnimatedRef = useRef(false)
-
-    // Capture hero icon positions on mount
-    useEffect(() => {
-        const captureHeroPositions = () => {
-            const positions: { [key: string]: { x: number, y: number } } = {}
-
-            // The hero icons in EntryLogo are inside anchor tags
-            // We'll find them by looking for SVGs in the hero section
-            const heroSection = document.querySelector('section')
-            if (heroSection) {
-                const heroIcons = heroSection.querySelectorAll('a[href^="tel"], a[href^="mailto"], a[href^="https://wa.me"], a[href*="instagram"]')
-
-                heroIcons.forEach((icon, index) => {
-                    const rect = icon.getBoundingClientRect()
-                    const name = heroIconOrder[index] || socials[index]?.name
-                    if (name) {
-                        positions[name] = {
-                            x: rect.left + rect.width / 2 - 20, // Center of icon
-                            y: rect.top + rect.height / 2 - 20
-                        }
-                    }
-                })
-            }
-
-            // Fallback: center of screen
-            if (Object.keys(positions).length === 0) {
-                socials.forEach((social, index) => {
-                    positions[social.name] = {
-                        x: windowSize.width / 2 - 20 + (index - 1.5) * 50,
-                        y: windowSize.height / 2
-                    }
-                })
-            }
-
-            setHeroPositions(positions)
-        }
-
-        // Delay to ensure DOM is ready
-        setTimeout(captureHeroPositions, 500)
-
-        window.addEventListener('resize', captureHeroPositions)
-        return () => window.removeEventListener('resize', captureHeroPositions)
-    }, [windowSize.width, windowSize.height])
+    const [isVisible, setIsVisible] = useState(false)
+    const [isMobile, setIsMobile] = useState(false)
 
     useEffect(() => {
         const handleScroll = () => {
-            const scrollY = window.scrollY
-
-            // Show icons after scrolling just 50px (works better on mobile)
-            const showThreshold = 50
-
-            // Check footer intersection
-            const footerElement = document.getElementById('footer-link-Phone')
-            let isNearFooter = false
-
-            if (footerElement) {
-                const footerRect = footerElement.getBoundingClientRect()
-                const triggerZone = windowSize.height - 200
-
-                if (footerRect.top < triggerZone) {
-                    isNearFooter = true
-                    // Near footer - start merge
-                    if (phase !== 2 && phase !== 3) {
-                        const newTargets: { [key: string]: { x: number, y: number } } = {}
-                        socials.forEach(social => {
-                            const el = document.getElementById(`footer-link-${social.name}`)
-                            if (el) {
-                                const rect = el.getBoundingClientRect()
-                                newTargets[social.name] = {
-                                    x: rect.left,
-                                    y: rect.top
-                                }
-                            }
-                        })
-                        setFooterPositions(newTargets)
-                        setPhase(2)
-
-                        setTimeout(() => {
-                            setPhase(3)
-                        }, 1500)
-                    }
-                }
-            }
-
-            // If scrolled away from footer, reset phase 2 to allow normal scroll logic
-            if (!isNearFooter && phase === 2) {
-                setPhase(1)
-            }
-
-            // Normal scroll logic - increased threshold to avoid hero overlap
-            const heroHeight = window.innerHeight * 0.8 // Hide icons during hero view
-
-            if (scrollY > heroHeight) {
-                if (phase === 0) {
-                    setPhase(1)
-                    hasAnimatedRef.current = true
-                } else if (phase === 3) {
-                    // Coming back from footer
-                    setPhase(1)
-                }
-            } else {
-                // Scrolled back to hero - hide floating icons
-                if (phase !== 0) {
-                    setPhase(0)
-                    hasAnimatedRef.current = false
-                }
-            }
+            // Show after scrolling past 80% of viewport height
+            const heroHeight = window.innerHeight * 0.8
+            setIsVisible(window.scrollY > heroHeight)
         }
 
         const handleResize = () => {
-            setWindowSize({
-                width: window.innerWidth,
-                height: window.innerHeight
-            })
+            setIsMobile(window.innerWidth < 768)
         }
 
         handleResize()
+        handleScroll()
 
-        window.addEventListener('scroll', handleScroll)
+        window.addEventListener('scroll', handleScroll, { passive: true })
         window.addEventListener('resize', handleResize)
-
-        setTimeout(handleScroll, 200)
 
         return () => {
             window.removeEventListener('scroll', handleScroll)
             window.removeEventListener('resize', handleResize)
         }
-    }, [phase, windowSize.height])
+    }, [])
 
-    if (phase === 3) return null
-
-    // Use 500px as threshold to catch smaller phones like Galaxy S8 (360px)
-    // 500-768 = small tablet, >768 = tablet/desktop
-    const isSmallMobile = windowSize.width < 500
-    const isMobile = windowSize.width < 768
-
-    const iconSize = isSmallMobile ? 36 : (isMobile ? 40 : 48)
-    const gap = isSmallMobile ? 44 : (isMobile ? 48 : 56)
-    const rightOffset = isSmallMobile ? 6 : (isMobile ? 10 : 24)
-    const totalHeight = socials.length * gap
-    const startY = (windowSize.height - totalHeight) / 2
+    const iconSize = isMobile ? 40 : 48
+    const gap = isMobile ? 48 : 56
+    const rightOffset = isMobile ? 10 : 24
 
     return (
-        <div className="fixed inset-0 z-[100] pointer-events-none overflow-hidden">
-            <AnimatePresence mode="wait">
-                {phase >= 1 && (
-                    <>
-                        {socials.map((social, index) => {
-                            const isMerging = phase === 2
-                            const footerTarget = footerPositions[social.name] || { x: 0, y: 0 }
-                            const heroStart = heroPositions[social.name] || {
-                                x: windowSize.width / 2 - 20,
-                                y: windowSize.height / 2
-                            }
-
-                            // Resting position on right side
-                            const restX = windowSize.width - iconSize - rightOffset
-                            const restY = startY + (index * gap)
-
-                            // ALL DEVICES: Fly from hero icon position to right side
-                            const initialX = heroStart.x
-                            const initialY = heroStart.y
-
-                            return (
-                                <motion.a
-                                    key={social.name}
-                                    href={social.href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{
-                                        width: iconSize,
-                                        height: iconSize,
-                                    }}
-                                    className={clsx(
-                                        "absolute flex items-center justify-center rounded-full",
-                                        "bg-bg-card/95 backdrop-blur-sm border border-gold-primary/30 text-gold-primary shadow-xl",
-                                        "pointer-events-auto cursor-pointer",
-                                        "hover:bg-gold-primary hover:text-bg-primary transition-colors duration-300"
-                                    )}
-                                    initial={{
-                                        x: initialX,
-                                        y: initialY,
-                                        opacity: 0,
-                                        scale: isMobile ? 0.8 : 0.5
-                                    }}
-                                    animate={
-                                        isMerging
-                                            ? {
-                                                x: footerTarget.x,
-                                                y: footerTarget.y,
-                                                opacity: 0,
-                                                scale: 0.5
-                                            }
-                                            : {
-                                                x: restX,
-                                                y: restY,
-                                                opacity: 1,
-                                                scale: 1
-                                            }
-                                    }
-                                    exit={{
-                                        x: initialX,
-                                        y: initialY,
-                                        opacity: 0,
-                                        scale: 0.5
-                                    }}
-                                    transition={{
-                                        duration: isMerging ? 1.5 : (isSmallMobile ? 0.8 : 1.2),
-                                        delay: isMerging ? 0 : index * 0.08,
-                                        ease: [0.25, 0.1, 0.25, 1.0]
-                                    }}
-                                    whileHover={{ scale: 1.15 }}
-                                >
-                                    {social.icon}
-                                </motion.a>
-                            )
-                        })}
-                    </>
-                )}
-            </AnimatePresence>
-        </div>
+        <AnimatePresence>
+            {isVisible && (
+                <div
+                    className="fixed z-[100] pointer-events-none"
+                    style={{
+                        right: rightOffset,
+                        top: '50%',
+                        transform: 'translateY(-50%)'
+                    }}
+                >
+                    <div className="flex flex-col gap-3">
+                        {socials.map((social, index) => (
+                            <motion.a
+                                key={social.name}
+                                href={social.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                    width: iconSize,
+                                    height: iconSize,
+                                }}
+                                className={clsx(
+                                    "flex items-center justify-center rounded-full",
+                                    "bg-bg-card/95 border border-gold-primary/30 text-gold-primary shadow-lg",
+                                    "pointer-events-auto cursor-pointer",
+                                    "hover:bg-gold-primary hover:text-bg-primary transition-colors duration-300"
+                                )}
+                                initial={{ opacity: 0, x: 50 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 50 }}
+                                transition={{
+                                    duration: 0.3,
+                                    delay: index * 0.05,
+                                    ease: 'easeOut'
+                                }}
+                                whileHover={{ scale: 1.1 }}
+                            >
+                                {social.icon}
+                            </motion.a>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </AnimatePresence>
     )
 }
+

@@ -6,10 +6,10 @@ import Image from 'next/image'
 export default function FounderSection() {
     return (
         <section className="relative py-24 md:py-40 px-4 sm:px-6 lg:px-8 bg-bg-primary overflow-hidden">
-            {/* Background Elements */}
+            {/* Background Elements - Reduced blur for Safari performance */}
             <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gold-primary/3 rounded-full blur-[20px] md:blur-[200px]" />
-                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gold-muted/5 rounded-full blur-[20px] md:blur-[150px]" />
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gold-primary/3 rounded-full blur-[40px]" />
+                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gold-muted/5 rounded-full blur-[40px]" />
             </div>
 
             <div className="relative max-w-6xl mx-auto">
@@ -103,9 +103,9 @@ export default function FounderSection() {
                                 </p>
                                 <p className="text-text-muted text-lg md:text-xl leading-relaxed max-w-xl mx-auto lg:mx-0">
                                     We craft interiors that feel balanced, serene, and deeply personal.
-Spaces designed to nurture the soul and enhance everyday living.
-Every project reflects thoughtful design, refined detail, and lasting quality.
-Beyond interiors, we create experiences that quietly elevate the way you live.
+                                    Spaces designed to nurture the soul and enhance everyday living.
+                                    Every project reflects thoughtful design, refined detail, and lasting quality.
+                                    Beyond interiors, we create experiences that quietly elevate the way you live.
                                 </p>
                             </blockquote>
 
@@ -123,29 +123,6 @@ Beyond interiors, we create experiences that quietly elevate the way you live.
                 </div>
             </div>
 
-            {/* Ambient Gold Particles */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                {[...Array(6)].map((_, i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute w-1 h-1 bg-gold-primary/30 rounded-full"
-                        style={{
-                            left: `${20 + i * 15}%`,
-                            top: `${30 + (i % 3) * 20}%`,
-                        }}
-                        animate={{
-                            y: [-20, 20, -20],
-                            opacity: [0.3, 0.6, 0.3],
-                        }}
-                        transition={{
-                            duration: 4 + i,
-                            repeat: Infinity,
-                            ease: 'easeInOut',
-                            delay: i * 0.5,
-                        }}
-                    />
-                ))}
-            </div>
         </section>
     )
 }
